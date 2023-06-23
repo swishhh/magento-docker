@@ -1,2 +1,4 @@
 ./projects
-./composer
+./projects/*
+./composer/*
+./composer/
