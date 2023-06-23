@@ -3,3 +3,4 @@
 ./composer/*
 ./composer/
 ./.env
+./.version

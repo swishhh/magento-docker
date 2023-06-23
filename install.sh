@@ -32,6 +32,7 @@ sed -i '' "s/sample.lc/$SERVER_NAME/" $NGINX_CONF
 echo ''
 
 getFullPathToProject () {
+  # todo: check specific folder definition as root may contain magento folder with magento root
   printf "Magento installation folder (${GREEN}/var/www/magento${NC}): "
   read PROJECT_ROOT_PATH
   PROJECT_ROOT_PATH=${PROJECT_ROOT_PATH%/}
@@ -105,6 +106,8 @@ read SWITCH
 if [ "$SWITCH" == "" ] || [ "$SWITCH" == "Y" ] || [ "$SWITCH" == "y" ] ; then
   echo ''
   /bin/bash ./switch.sh
+  echo ''
+  printf "Do not forget to update ${YELLOW}/etc/hosts${NC} file with ${YELLOW}127.0.0.1 $SERVER_NAME${NC}\n"
 else
   printf "To switch the environment put ${YELLOW}$ENV_FILE${NC} as ${YELLOW}.env${NC} then run ${YELLOW}docker-compose up -d${NC}\n"
 fi

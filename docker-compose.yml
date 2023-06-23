@@ -12,8 +12,8 @@ services:
       - ./docker/php/${PHP_VERSION}/xdebug.ini:/etc/php/${PHP_VERSION}/mods-available/xdebug.ini
       - ./docker/php/${PHP_VERSION}/config.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/config-php.ini
     environment:
-    - COMPOSER_HOME=/var/www/composer
-    - PHP_IDE_CONFIG=serverName=${SERVER_NAME}
+      - COMPOSER_HOME=/var/www/composer
+      - PHP_IDE_CONFIG=serverName=${SERVER_NAME}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
