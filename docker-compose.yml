@@ -1,0 +1,116 @@
+version: "3.7"
+services:
+  php:
+    container_name: php${PHP_VERSION}
+    build:
+      context: docker/php/${PHP_VERSION}
+      dockerfile: php.Dockerfile
+    volumes:
+      - ${SOURCE_DIRECTORY}/:/var/www/html:cached
+      - ./composer:/var/www/composer:cached
+      - ${NGINX_CONFIG_PATH}:/etc/nginx/conf.d/default.conf:cached
+      - ./docker/php/${PHP_VERSION}/xdebug.ini:/etc/php/${PHP_VERSION}/mods-available/xdebug.ini
+      - ./docker/php/${PHP_VERSION}/config.ini:/etc/php/${PHP_VERSION}/fpm/conf.d/config-php.ini
+    environment:
+    - COMPOSER_HOME=/var/www/composer
+    - PHP_IDE_CONFIG=serverName=${SERVER_NAME}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "17005:35729"
+
+  nginx:
+    container_name: nginx
+    build:
+      context: docker/nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ${SOURCE_DIRECTORY}/:/var/www/html:delegated
+      - ${NGINX_CONFIG_PATH}:/etc/nginx/conf.d/default.conf:delegated
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - php
+
+  db:
+    container_name: db
+    command: 
+      --default-authentication-plugin=mysql_native_password
+    build:
+      context: docker/db
+      dockerfile: Dockerfile
+    ports:
+      - "3306:3306"
+    restart: on-failure
+    volumes:
+      - ./docker/db/default.cnf:/etc/mysql/conf.d/mysql.cnf:delegated
+      - ${DB_DATA_PATH}:/var/lib/mysql
+    depends_on:
+      - nginx
+
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: docker/elasticsearch
+      dockerfile: Dockerfile
+    ports:
+      - "9200:9200"
+    deploy:
+      resources:
+        limits:
+          memory: 2512m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms800m -Xmx800m"
+      - "cluster.routing.allocation.disk.threshold_enabled=false"
+      - "index.blocks.read_only_allow_delete"
+    restart: on-failure
+    volumes:
+      - ${ELASTIC_DATA_PATH}:/usr/share/elasticsearch/data
+
+  redis:
+    container_name: redis
+    build:
+      context: docker/redis
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '6379:6379'
+
+  rabbitmq:
+    container_name: rabbitmq
+    hostname: rabbitmq
+    build:
+      context: docker/rabbitmq
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - '5672:5672'
+    depends_on:
+      - php
+
+#  varnish:
+#    container_name: varnish${VARNISH_VERSION}
+#    build:
+#      context: docker/varnish/${VARNISH_VERSION}
+#      dockerfile: varnish.Dockerfile
+#    volumes:
+#      - "${VARNISH_VCL_FILE}:/etc/varnish/default.vcl"
+#    ports:
+#      - '80:80'
+#    tmpfs:
+#      - /var/lib/varnish:exec
+#    environment:
+#      - VARNISH_SIZE=2G
+#    command: "-p default_keep=300"
+#    depends_on:
+#      - nginx
