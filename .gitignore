@@ -1,6 +1,5 @@
-./projects
-./projects/*
-./composer/*
-./composer/
-./.env
-./.version
+projects
+composer/
+.env
+.version
+.idea

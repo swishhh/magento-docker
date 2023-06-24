@@ -1,35 +1,32 @@
 ## Install
 
-### 1. Clone magento's repository
+### 1. Clone magento's repository.
 
 Example for ``MacOS``: ``~/Users/{username}/Sites/{magento root}``
 
-### 2. Give a permission for shell scripts
+### 2. Give a permission.
 
 ``sudo chmod 755 install.sh``
 
-``sudo chmod 755 switch.sh``
+``sudo chmod 755 run.sh``
 
-``sudo chmod 755 restart.sh``
+``sudo chmod 755 die.sh``
 
-### 3. Execute install script
+### 3. Link composer.
+Make sure that composer's directory does not exist inside root folder.
+
+### 4. Execute install script.
 
 Bash ``./install.sh`` inside the root directory and follow the steps.
 
-1. Define a project name, example: ``test``
-2. Define a server name, example: ``test.local``
-3. Define a full path to the project, example: ``~/Users/{username}/Sites/{magento root}``
-4. Select a version of PHP
-
-### 4. Server name
+### 5. Server name.
 Add a new line ``127.0.0.1 test.local`` to ``/etc/hosts``
-
-### 5. Link composer
-
-Make sure that directory composer doesn't exist in root folder. 
 
 Example MacOS:
 ``ln -s /Users/{username}/.composer composer``
 
-### 6. Run docker
-Inside the root directory run ``docker-compose up -d``
+### 6. Run docker.
+Use ``run.sh`` and follow the steps.
+
+### 7. Stop docker.
+Use ``die.sh``
