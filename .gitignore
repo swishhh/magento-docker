@@ -1,5 +1,5 @@
 projects
-composer/
+composer
 .env
 .version
 .idea
