@@ -1,5 +1,6 @@
 projects
 composer
+vendor
 .env
 .version
 .idea

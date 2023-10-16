@@ -1,0 +1,36 @@
+<?xml version="1.0" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="command" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="class" minOccurs="1" maxOccurs="1" type="xs:normalizedString"/>
+                            <xs:element name="description" minOccurs="1" maxOccurs="1" type="xs:normalizedString"/>
+                        </xs:sequence>
+                        <xs:attribute name="name" use="required" type="commandName"/>
+                    </xs:complexType>
+                    <xs:unique name="uniqueCommandCode">
+                        <xs:selector xpath="command"/>
+                        <xs:field xpath="@name"/>
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="uniqueGlobalCommandCode">
+            <xs:selector xpath="command"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+    <xs:simpleType name="commandName">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Za-z0-9_\-]{1,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="simpleType">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[A-Za-z0-9_]{3,}"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

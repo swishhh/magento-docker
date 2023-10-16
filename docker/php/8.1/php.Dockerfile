@@ -53,6 +53,11 @@ RUN apt-get update && apt-get install -y php8.1-bcmath \
     php8.1-tokenizer \
     php8.1-xmlwriter
 
+RUN pecl install yaml-2.0.0
+    && echo "extension=yaml.so" >> /etc/php/8.1/mods-available/ext-yaml.ini \
+    && ln -s /etc/php/8.1/mods-available/ext-yaml.ini /etc/php/8.1/cli/conf.d/ext-yaml.ini \
+    && ln -s /etc/php/8.1/mods-available/ext-yaml.ini /etc/php/8.1/fpm/conf.d/ext-yaml.ini
+
 RUN if [ "8.1" < "8.0" ]; then apt-get install -y php8.1-json; fi
 
 RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php8.1-fpm.pid/" /etc/php/8.1/fpm/php-fpm.conf \
@@ -78,6 +83,19 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin -
 RUN pecl install -f xdebug-3.2.1 \
     && ln -s /etc/php/8.1/mods-available/xdebug.ini /etc/php/8.1/cli/conf.d/11-xdebug.ini \
     && ln -s /etc/php/8.1/mods-available/xdebug.ini /etc/php/8.1/fpm/conf.d/11-xdebug.ini;
+
+RUN apt-get install -y unixodbc-dev \
+    && pecl config-set php_ini /etc/php/8.1/fpm/php.ini \
+    && pecl install -f sqlsrv \
+    && pecl install -f pdo_sqlsrv \
+    && printf "; priority=20\nextension=sqlsrv.so\n" > /etc/php/8.1/mods-available/sqlsrv.ini \
+    && printf "; priority=30\nextension=pdo_sqlsrv.so\n" > /etc/php/8.1/mods-available/pdo_sqlsrv.ini \
+    && phpenmod -v 8.1 sqlsrv pdo_sqlsrv;
+
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
+    && curl https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y msodbcsql18;
 
 RUN sed -i 's/session.cookie_lifetime = 0/session.cookie_lifetime = 2592000/g' /etc/php/8.1/fpm/php.ini \
     && sed -i 's/post_max_size = 8M/post_max_size = 80M/g' /etc/php/8.1/fpm/php.ini \

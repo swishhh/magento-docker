@@ -18,7 +18,7 @@ getPHPVersion() {
 
   printf "PHP version (composer.json version is ${YELLOW}$COMPOSER_FILE_PHP_VERSION${NC}): \n"
 
-  declare -a versions=("7.4" "8.1")
+  declare -a versions=("7.4" "8.1" "8.2")
   for i in "${!versions[@]}"
     do
       printf "${GREEN}$i${NC}: ${versions[$i]}\n"

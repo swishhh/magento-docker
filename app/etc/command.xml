@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="command.xsd">
+    <command name="help">
+        <class><![CDATA[Console\Command\Help]]></class>
+        <description><![CDATA[Help. Output list of available commands.]]></description>
+    </command>
+    <command name="install">
+        <class><![CDATA[Console\Command\Install]]></class>
+        <description><![CDATA[Run magento project installation.]]></description>
+    </command>
+    <command name="status">
+        <class><![CDATA[Console\Command\Status]]></class>
+        <description><![CDATA[Retrieve docker status.]]></description>
+    </command>
+    <command name="clear">
+        <class><![CDATA[Console\Command\Clear]]></class>
+        <description><![CDATA[Clear terminal's output and proceed to home.]]></description>
+    </command>
+    <command name="run">
+        <class><![CDATA[Console\Command\Run]]></class>
+        <description><![CDATA[Stop current docker and run a new one.]]></description>
+    </command>
+    <command name="kill">
+        <class><![CDATA[Console\Command\Kill]]></class>
+        <description><![CDATA[Shutdown all docker containers.]]></description>
+    </command>
+    <command name="edit">
+        <class><![CDATA[Console\Command\Edit]]></class>
+        <description><![CDATA[Edit project configuration.]]></description>
+    </command>
+    <command name="delete">
+        <class><![CDATA[Console\Command\Delete]]></class>
+        <description><![CDATA[Delete project and all the following data such as databases etc.]]></description>
+    </command>
+    <command name="rebuild">
+        <class><![CDATA[Console\Command\Rebuild]]></class>
+        <description><![CDATA[Rebuild project containers.]]></description>
+    </command>
+</config>

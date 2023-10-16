@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php
+
+if (PHP_SAPI !== 'cli') {
+    echo 'magento-docker must be run as a CLI application';
+    exit(1);
+}
+
+define('ROOT', dirname(__FILE__));
+
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/app/autoload.php';
+
+use Console\App;
+
+$dockerApp = new App();
+
+try {
+    $dockerApp->launch();
+} catch (\Throwable $e) {
+    echo $e->getMessage();
+    exit(1);
+}
