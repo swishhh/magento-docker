@@ -185,6 +185,21 @@ server {
         include        fastcgi_params;
     }
 
+    # PHP entry point for main application
+    location ~ ^/(get|static|health_check)\.php$ {
+        try_files $uri =404;
+
+        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
+        fastcgi_param  PHP_VALUE "memory_limit=756M \n max_execution_time=18000";
+        fastcgi_read_timeout 18000s;
+        fastcgi_connect_timeout 18000s;
+
+
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
     gzip on;
     gzip_disable "msie6";
 

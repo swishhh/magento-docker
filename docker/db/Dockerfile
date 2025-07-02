@@ -1,4 +1,4 @@
-FROM mariadb:10.4
+FROM mariadb:10.6.21
 
 ENV MYSQL_ROOT_PASSWORD=password
 ENV MYSQL_DATABASE=magento

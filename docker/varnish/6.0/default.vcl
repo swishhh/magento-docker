@@ -9,7 +9,7 @@ upstream fastcgi_backend {
 
 server {
     listen      80;
-    server_name cepsa.lc;
+    server_name magento.lc;
 
     set $MAGE_ROOT /var/www/html/magento;
 
@@ -170,9 +170,24 @@ server {
     }
 
     # PHP entry point for main application
-    location ~ ^/(index|get|static|errors/report|errors/404|errors/503|health_check)\.php$ {
+    location ~ ^/(index|errors/report|errors/404|errors/503)\.php$ {
         try_files $uri =404;
         fastcgi_pass   fastcgi_backend;
+
+        fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
+        fastcgi_param  PHP_VALUE "memory_limit=756M \n max_execution_time=18000";
+        fastcgi_read_timeout 18000s;
+        fastcgi_connect_timeout 18000s;
+
+
+        fastcgi_index  index.php;
+        fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
+        include        fastcgi_params;
+    }
+
+    # PHP entry point for main application
+    location ~ ^/(get|static|health_check)\.php$ {
+        try_files $uri =404;
 
         fastcgi_param  PHP_FLAG  "session.auto_start=off \n suhosin.session.cryptua=off";
         fastcgi_param  PHP_VALUE "memory_limit=756M \n max_execution_time=18000";

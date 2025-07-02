@@ -3,6 +3,6 @@ source ./bin/tools/header.sh
 echo ''
 header "Stopping running docker."
 
-docker-compose down
+docker compose down
 
 echo ''

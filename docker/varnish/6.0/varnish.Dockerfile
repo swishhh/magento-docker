@@ -1,1 +1,1 @@
-FROM varnish:6.0
+FROM varnish:7.3

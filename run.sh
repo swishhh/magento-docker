@@ -41,9 +41,9 @@ if [ "$(ls -A $PROJECTS_DIR)" ]; then
   header "Running docker..."
   docker-compose down
   if [ $VERSION_CHANGED -eq 1 ]; then
-    docker-compose build php
+    docker compose build php
   fi
-  docker-compose up -d
+  docker compose up -d
 
   echo ''
 else

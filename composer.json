@@ -1,5 +1,7 @@
 {
     "require": {
-        "symfony/console": "^6.3"
+        "symfony/console": "^6.3",
+        "ext-pcntl": "*",
+        "ext-posix": "*"
     }
 }

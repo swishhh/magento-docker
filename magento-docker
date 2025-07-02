@@ -12,6 +12,27 @@ require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/app/autoload.php';
 
 use Console\App;
+use Console\Utils\Registry;
+
+$handler = function ($signal) {
+    switch($signal) {
+        case SIGTERM:
+            print "Caught SIGTERM\n";
+            break;
+        case SIGKILL:
+            print "Caught SIGKILL\n";
+            break;
+        case SIGINT:
+            print "Caught SIGINT\n";
+            Registry::set('exit', true);
+            $stream = Registry::get('stream');
+            fclose($stream);
+            var_dump($stream);
+
+            break;
+    }
+};
+pcntl_signal(SIGINT, $handler);
 
 $dockerApp = new App();
 

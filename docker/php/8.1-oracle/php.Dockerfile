@@ -23,6 +23,10 @@ RUN apt-get clean && apt-get -y update && apt-get install -y locales \
     lsof \
     openssl \
     msmtp \
+    alien \
+    wget \
+    libaio1 \
+    libyaml-dev \
     && locale-gen en_US.UTF-8 \
     && LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
 
@@ -54,6 +58,33 @@ RUN apt-get update && apt-get install -y php8.1-bcmath \
     php8.1-xmlwriter
 
 RUN if [ "8.1" < "8.0" ]; then apt-get install -y php8.1-json; fi
+
+# Oracle client ARM64 on Ubuntu
+RUN wget -O basic.rpm https://download.oracle.com/otn_software/linux/instantclient/instantclient-basiclite-linux-arm64.rpm && \
+    wget -O sdk.rpm https://download.oracle.com/otn_software/linux/instantclient/instantclient-sdk-linux-arm64.rpm && \
+    fakeroot alien --target=arm64 --install basic.rpm && \
+    fakeroot alien --target=arm64 --install sdk.rpm && \
+    export LD_LIBRARY_PATH=/usr/lib/oracle/19.24/client64/lib/${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH} && \
+    touch /etc/ld.so.conf.d/oracle.conf && \
+    echo -e '/usr/lib/oracle/19.24/client64/lib/' >> /etc/ld.so.conf.d/oracle.conf  && \
+    ldconfig && \
+    touch /etc/profile.d/oracle.sh && chmod o+r /etc/profile.d/oracle.sh && \
+    echo -e 'export ORACLE_HOME=/usr/lib/oracle/19.24/client64 \n export PATH=$PATH:$ORACLE_HOME/bin' >> /etc/profile.d/oracle.sh && \
+    echo -e '\n export ORACLE_HOME=/usr/lib/oracle/19.24/client64' >> ~/.bash_profile && \
+    ln -s /usr/include/oracle/19.24/client64 $ORACLE_HOME/include
+
+#instantclient,/usr/lib/oracle/19.22/client64/lib
+RUN echo 'instantclient,/usr/lib/oracle/19.24/client64/lib' | pecl install -f oci8-3.2.1 && \
+    touch /etc/php/8.1/mods-available/oci8.ini && \
+    echo "extension=oci8.so" > /etc/php/8.1/mods-available/oci8.ini \
+    && ln -s /etc/php/8.1/mods-available/oci8.ini /etc/php/8.1/cli/conf.d/666-oci8.ini \
+    && ln -s /etc/php/8.1/mods-available/oci8.ini /etc/php/8.1/fpm/conf.d/666-oci8.ini
+
+RUN pecl install -f yaml && \
+    touch /etc/php/8.1/mods-available/yaml.ini && \
+    echo "extension=yaml.so" > /etc/php/8.1/mods-available/yaml.ini \
+    && ln -s /etc/php/8.1/mods-available/yaml.ini /etc/php/8.1/cli/conf.d/777-yaml.ini \
+    && ln -s /etc/php/8.1/mods-available/yaml.ini /etc/php/8.1/fpm/conf.d/777-yaml.ini
 
 RUN sed -i -e "s/pid =.*/pid = \/var\/run\/php8.1-fpm.pid/" /etc/php/8.1/fpm/php-fpm.conf \
     && sed -i -e "s/error_log =.*/error_log = \/proc\/self\/fd\/2/" /etc/php/8.1/fpm/php-fpm.conf \

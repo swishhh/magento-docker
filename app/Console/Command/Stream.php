@@ -15,6 +15,7 @@ use Console\Utils\GetCommands;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Exception\ExceptionInterface;
+use Console\Utils\Registry;
 
 class Stream extends Command
 {
@@ -34,11 +35,12 @@ class Stream extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        Registry::set('parent', [$this, [$input, $output]]);
+
         $extendOutput = new ExtendOutput();
         $extendOutput->extend($output);
 
         $output->writeHeader(helpInfo: true);
-
         while (true) {
             $commandName = $this->ask($input, $output); // todo: parse command and arguments.
             if ($commandName === 'exit') {
@@ -50,11 +52,14 @@ class Stream extends Command
                 $output->writeHeader();
                 $output->writeln('<comment>-h --help</comment> - Get list of available commands.');
                 $output->writeln('<error>There is no commands as "' . $commandName . '"</error>', nlStart: true);
+
+                continue;
             }
 
             $commandInput = new StringInput('');
             $commandOutput = new Output();
             $extendOutput->extend($commandOutput);
+            $command->setHelperSet($this->getHelperSet());
             $command?->run(
                 $commandInput,
                 $commandOutput
